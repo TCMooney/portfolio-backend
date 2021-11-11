@@ -4,6 +4,7 @@ const Admin = require("../models/adminSchema");
 const _ = require("lodash");
 
 exports.signin = (req, res) => {
+  console.log(req.body);
   const { email, password } = req.body;
   Admin.findOne({ email }, (err, admin) => {
     if (err || !admin) {
@@ -13,7 +14,7 @@ exports.signin = (req, res) => {
     }
     //if user is not found make sure the email and password match
     // create authenitcation method in model and use here
-    if (!uadmin.authenticate(password)) {
+    if (!admin.authenticate(password)) {
       return res.status(401).json({
         error: "Email and password does not match",
       });
@@ -45,9 +46,15 @@ exports.signout = (req, res) => {
   });
 };
 
-exports.adminSignup = (req, res) => {
+exports.adminSignup = async (req, res) => {
   console.log(req.session);
-  // const { email, password}
+  const userExists = await Admin.findOne({ email: req.body.email });
+  if (userExists)
+    return res.status(403).json({ error: "You ain't me. Get outta here" });
+
+  const admin = await new Admin(req.body);
+  await admin.save();
+  res.status(200).json({ message: "Welcome, me!" });
 };
 
 exports.requireSignin = (req, res, next) => {

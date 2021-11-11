@@ -5,12 +5,14 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const bodyParser = require("body-parser");
 
 const adminRoutes = require("./routes/adminRoutes");
+const portfolioItemsRoutes = require("./routes/portfolioItemsRoutes");
 
 const app = express();
 
-app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors());
 app.use(morgan("dev"));
 dotenv.config();
@@ -35,6 +37,7 @@ app.use(
 app.use(cookieParser());
 
 app.use("/admin", adminRoutes);
+app.use("/items", portfolioItemsRoutes);
 
 // app.get("/", (req, res) => {
 //   res.json({ msg: "Hello world" });

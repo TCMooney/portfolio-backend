@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const uuid = require("uuidv1");
 const crypto = require("crypto");
 const { Schema } = mongoose;
-const { ObjectId } = mongoose.Schema;
 
 const adminSchema = new Schema({
   email: {
