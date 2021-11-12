@@ -10,6 +10,10 @@ const portfolioItemSchema = new Schema({
     type: String,
     required: true,
   },
+  portfolioItemUrl: {
+    type: String,
+    required: true,
+  },
   photo: {
     data: Buffer,
     contentType: String,
