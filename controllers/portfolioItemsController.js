@@ -78,9 +78,17 @@ exports.itemById = (req, res, next, id) => {
       next();
     });
 };
-//     .then((item) => {
-//       res.json(item);
-//     })
-//     .catch((err) => console.log(err));
-//   })
-// }
+
+exports.deleteItem = (req, res) => {
+  let item = req.item;
+  item.remove((err, item) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    res.json({ message: "Item deleted successfully" });
+  });
+};
+
+// exports.

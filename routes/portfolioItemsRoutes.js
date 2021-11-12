@@ -4,6 +4,7 @@ const {
   newItem,
   updateItem,
   itemById,
+  deleteItem,
 } = require("../controllers/portfolioItemsController");
 
 const router = express.Router();
@@ -11,6 +12,7 @@ const router = express.Router();
 router.get("/", getItems);
 router.post("/", newItem);
 router.put("/:itemId", updateItem);
+router.delete("/:itemId", deleteItem);
 
 router.param("itemId", itemById);
 
