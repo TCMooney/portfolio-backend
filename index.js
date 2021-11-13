@@ -9,7 +9,7 @@ const bodyParser = require("body-parser");
 
 const adminRoutes = require("./routes/adminRoutes");
 const portfolioItemsRoutes = require("./routes/portfolioItemsRoutes");
-
+const blogRoutes = require("./routes/blogRoutes");
 const app = express();
 
 app.use(bodyParser.json());
@@ -27,7 +27,7 @@ app.use(
     saveUninitialized: true,
     cookie: {
       sameSite: "none",
-      secure: true,
+      secure: false,
       httpOnly: false,
       maxAge: 60000 * 60 * 24,
     },
@@ -38,10 +38,7 @@ app.use(cookieParser());
 
 app.use("/admin", adminRoutes);
 app.use("/items", portfolioItemsRoutes);
-
-// app.get("/", (req, res) => {
-//   res.json({ msg: "Hello world" });
-// });
+app.use("/blogs", blogRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

@@ -1,15 +1,13 @@
 const jwt = require("jsonwebtoken");
-const expressJwt = require("express-jwt");
 const Admin = require("../models/adminSchema");
 const _ = require("lodash");
 
 exports.signin = (req, res) => {
-  console.log(req.body);
   const { email, password } = req.body;
   Admin.findOne({ email }, (err, admin) => {
     if (err || !admin) {
       return res.status(401).json({
-        error: "User with that email does not exist.",
+        error: "Not the right email homie",
       });
     }
     //if user is not found make sure the email and password match
@@ -47,7 +45,6 @@ exports.signout = (req, res) => {
 };
 
 exports.adminSignup = async (req, res) => {
-  console.log(req.session);
   const userExists = await Admin.findOne({ email: req.body.email });
   if (userExists)
     return res.status(403).json({ error: "You ain't me. Get outta here" });
@@ -67,5 +64,19 @@ exports.requireSignin = (req, res, next) => {
     next();
   } catch (err) {
     res.status(400).json({ error: "Token not valid" });
+  }
+};
+
+exports.hasAuthorization = (req, res, next) => {
+  const token = req.session.access_token;
+  if (!token)
+    return res.status(401).json({ message: "No token, access denied" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.auth = decoded;
+    next();
+  } catch (err) {
+    res.status(400).json({ message: "Token is not valid" });
   }
 };

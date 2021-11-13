@@ -1,19 +1,19 @@
 const _ = require("lodash");
-const PortfolioItem = require("../models/portfolioItemSchema");
+const Blog = require("../models/blogSchema");
 const formidable = require("formidable");
 const fs = require("fs");
 
-exports.getItems = async (req, res) => {
-  const items = await PortfolioItem.find()
-    .select("_id title description portfolioItemUrl date")
+exports.getBlogs = async (req, res) => {
+  const blogs = await Blog.find()
+    .select("_id title body date")
     .sort({ date: -1 })
-    .then((items) => {
-      res.json(items);
+    .then((blogs) => {
+      res.json(blogs);
     })
     .catch((err) => console.log(err));
 };
 
-exports.newItem = (req, res, next) => {
+exports.newBlog = (req, res, next) => {
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
   form.parse(req, (err, fields, files) => {
@@ -22,13 +22,13 @@ exports.newItem = (req, res, next) => {
         error: "Image could not be uploaded",
       });
     }
-    let item = new PortfolioItem(fields);
+    let blog = new Blog(fields);
 
     if (files.photo) {
-      item.photo.data = fs.readFileSync(files.photo.path);
-      item.photo.contentType = files.photo.type;
+      blog.photo.data = fs.readFileSync(files.photo.path);
+      blog.photo.contentType = files.photo.type;
     }
-    item.save((err, result) => {
+    blog.save((err, result) => {
       if (err) {
         return res.status(400).json({ error: err });
       }
@@ -37,7 +37,7 @@ exports.newItem = (req, res, next) => {
   });
 };
 
-exports.updateItem = (req, res, next) => {
+exports.updateBlog = (req, res, next) => {
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
   form.parse(req, (err, fields, files) => {
@@ -46,15 +46,15 @@ exports.updateItem = (req, res, next) => {
         error: "Image could not be uploaded",
       });
     }
-    let item = req.item;
-    item = _.extend(item, fields);
-    item.updated = Date.now();
+    let blog = req.blog;
+    blog = _.extend(blog, fields);
+    blog.updated = Date.now();
 
     if (files.photo) {
-      item.photo.data = fs.readFileSync(files.photo.path);
-      item.photo.contentType = files.photo.type;
+      blog.photo.data = fs.readFileSync(files.photo.path);
+      blog.photo.contentType = files.photo.type;
     }
-    item.save((err, result) => {
+    blog.save((err, result) => {
       if (err) {
         return res.status(400).json({ error: err });
       }
@@ -63,28 +63,28 @@ exports.updateItem = (req, res, next) => {
   });
 };
 
-exports.getItemById = (req, res, next, id) => {
-  PortfolioItem.findById(id)
-    .select("_id title description portfolioItemUrl date")
-    .exec((err, item) => {
-      if (err || !item) {
+exports.getBlogById = (req, res, next, id) => {
+  Blog.findById(id)
+    .select("_id title body date")
+    .exec((err, blog) => {
+      if (err || !blog) {
         return res.status(400).json({
           error: err,
         });
       }
-      req.item = item;
+      req.blog = blog;
       next();
     });
 };
 
-exports.deleteItem = (req, res) => {
-  let item = req.item;
-  item.remove((err, item) => {
+exports.deleteBlog = (req, res) => {
+  let blog = req.blog;
+  blog.remove((err, blog) => {
     if (err) {
       return res.status(400).json({
         error: err,
       });
     }
-    res.json({ message: "Item deleted successfully" });
+    res.json({ message: "Blog deleted successfully" });
   });
 };
